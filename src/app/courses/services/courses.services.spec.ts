@@ -121,3 +121,18 @@ describe("CourseService", () => {
         httpTestingController.verify();
     });
 });
+
+// HttpTestingController
+// CLASS
+// Controller to be injected into tests, that allows for mocking and flushing of requests.
+
+// HttpTestingController.expectOne()
+// code
+// Expect that a single request has been made which matches the given URL, and return its mock.
+
+// HttpTestingController.verify()
+// code
+// Verify that no unmatched requests are outstanding.
+
+// flush()
+// provides responses by "flushing" each expected request.
