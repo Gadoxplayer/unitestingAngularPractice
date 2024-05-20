@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 import { CoursesService } from "./courses.service";
 import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
-import { COURSES } from "../../../../server/db-data";
+import { COURSES, findLessonsForCourse } from "../../../../server/db-data";
 import { Course } from "../model/course";
 import { HttpErrorResponse } from "@angular/common/http";
 
@@ -33,7 +33,7 @@ describe("CourseService", () => {
                 expect(course.titles.description).toBe("Angular Testing Course")
             });
         
-        //with the testing controller we can validate some extra information about the recieved data
+        //with the testing controller we can validate some extra information about the recieved data with a mock http request
         const req = httpTestingController.expectOne('/api/courses');
         expect(req.request.method).toEqual("GET");
         req.flush({payload: Object.values(COURSES)});
@@ -94,6 +94,28 @@ describe("CourseService", () => {
         //simulates the response for the http requets
         req.flush('error', {status: 500, statusText: 'Internal error for testing purpose'});
     });
+
+    it('should fin d a list of lessons', () => {
+        coursesServices.findLessons(12)
+            .subscribe(lessons => {
+                expect(lessons).toBeTruthy();
+                expect(lessons.length).toBe(3);
+            });
+        
+        const req = httpTestingController.expectOne(req => req.url == '/api/lessons');
+
+        expect(req.request.method).toEqual("GET");
+
+        expect(req.request.params.get("courseId")).toEqual("12");
+        expect(req.request.params.get("filter")).toEqual("");
+        expect(req.request.params.get("sortOrder")).toEqual("asc");
+        expect(req.request.params.get("pageNumber")).toEqual("0");
+        expect(req.request.params.get("pageSize")).toEqual("3");
+
+        req.flush({
+            payload: findLessonsForCourse(12).slice(0, 3)
+        });
+    })
 
     afterEach(() => {
         httpTestingController.verify();
