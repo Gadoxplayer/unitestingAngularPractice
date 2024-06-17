@@ -16,7 +16,7 @@ import {click} from '../common/test-utils';
 
 
 
-fdescribe('HomeComponent', () => {
+describe('HomeComponent', () => {
 
   let fixture: ComponentFixture<HomeComponent>;
   let component:HomeComponent;
