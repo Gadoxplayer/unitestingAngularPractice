@@ -43,7 +43,7 @@ describe('HomeComponent', () => {
         el = fixture.debugElement;
         coursesServices = TestBed.inject(CoursesService);
       });
-
+// we could use fakeasync and call here flushMicrotask(); to do the same as the waitforasync
   }));
 
   it("should create the component", () => {
@@ -114,6 +114,51 @@ describe('HomeComponent', () => {
     }, 800);
 
   });
+
+  it("should display advanced courses when tab clicked - using fakeAsync", fakeAsync(() => {
+    // writing the test using fakeasync
+    coursesServices.findAllCourses.and.returnValue(of(setupCourses()));
+
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css(".mat-mdc-tab"));
+
+    //el.nativeElement.click();
+
+    click(tabs[1]);
+
+    fixture.detectChanges();
+
+    flush();
+    // we could use tick(1) since we now the call is to animation frame
+
+    const cardTitles = el.queryAll(By.css(".mat-mdc-card-title"));
+
+    expect(cardTitles.length).toBeGreaterThan(0, "Unexpected number of titles found");
+    //expect(cardTitles[0].nativeElement.textContent).toContain("Angular Security Course");
+
+  }));
+
+  it("should display advanced courses when tab clicked - using waitForAsync", waitForAsync(() => {
+    // writing the test using waitForAsync
+    coursesServices.findAllCourses.and.returnValue(of(setupCourses()));
+
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css(".mat-mdc-tab"));
+
+    //el.nativeElement.click();
+
+    click(tabs[1]);
+
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const cardTitles = el.queryAll(By.css(".mat-mdc-card-title"));
+
+      expect(cardTitles.length).toBeGreaterThan(0, "Unexpected number of titles found");
+      //expect(cardTitles[0].nativeElement.textContent).toContain("Angular Security Course");
+    });
+  }));
 
 });
 
